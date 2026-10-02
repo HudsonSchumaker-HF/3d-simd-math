@@ -57,6 +57,25 @@ mat4 mat4_mul(mat4 a, mat4 b)
     return result;
 }
 
+vec4 mat4_mul_vec4(mat4 m, vec4 v)
+{
+    const __m128 vector = _mm_loadu_ps(&v.x);
+
+    const __m128 row0 = _mm_loadu_ps(&m.m[0]);
+    const __m128 row1 = _mm_loadu_ps(&m.m[4]);
+    const __m128 row2 = _mm_loadu_ps(&m.m[8]);
+    const __m128 row3 = _mm_loadu_ps(&m.m[12]);
+
+    vec4 result;
+
+    result.x = _mm_cvtss_f32(_mm_dp_ps(row0, vector, 0xF1));
+    result.y = _mm_cvtss_f32(_mm_dp_ps(row1, vector, 0xF1));
+    result.z = _mm_cvtss_f32(_mm_dp_ps(row2, vector, 0xF1));
+    result.w = _mm_cvtss_f32(_mm_dp_ps(row3, vector, 0xF1));
+
+    return result;
+}
+
 mat4 mat4_transpose(mat4 m)
 {
     mat4 result;
