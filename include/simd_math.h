@@ -36,6 +36,7 @@ typedef struct mat4 {
 
 mat4 mat4_identity(void);
 mat4 mat4_mul(mat4 a, mat4 b);
+vec4 mat4_mul_vec4(mat4 m, vec4 v);
 mat4 mat4_transpose(mat4 m);
 
 #endif /* SIMD_MATH_H */
