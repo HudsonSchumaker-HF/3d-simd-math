@@ -1,0 +1,51 @@
+
+name: SIMD Math CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.compiler }} - SSE4.1
+
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [gcc, clang]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            clang
+
+      - name: Show compiler version
+        run: |
+          ${{ matrix.compiler }} --version
+
+      - name: Build and run tests
+        run: |
+          make clean
+          make CC=${{ matrix.compiler }} test
+
+      - name: Check for memory and undefined behavior issues
+        if: matrix.compiler == 'gcc'
+        run: |
+          make clean
+          make CC=gcc \
+            CFLAGS="-std=c17 -Wall -Wextra -Wpedantic -O3 -g -msse4.1 -fsanitize=address,undefined -fno-omit-frame-pointer" \
+            test
