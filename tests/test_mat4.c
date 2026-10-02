@@ -1,6 +1,45 @@
 #include "simd_math.h"
 #include "test_common.h"
 
+void test_mat4_mul_vec4(void) 
+{
+    /* Identity matrix */
+    mat4 identity = mat4_identity();
+
+    vec4 input = vec4_set(1.0f, 2.0f, 3.0f, 1.0f);
+    vec4 result = mat4_mul_vec4(identity, input);
+
+    ASSERT_NEAR(result.x, 1.0f);
+    ASSERT_NEAR(result.y, 2.0f);
+    ASSERT_NEAR(result.z, 3.0f);
+    ASSERT_NEAR(result.w, 1.0f);
+
+    /* General matrix */
+    mat4 matrix = {{
+        1.0f,  2.0f,  3.0f,  4.0f,
+        5.0f,  6.0f,  7.0f,  8.0f,
+        9.0f, 10.0f, 11.0f, 12.0f,
+       13.0f, 14.0f, 15.0f, 16.0f
+    }};
+
+    input = vec4_set(1.0f, 2.0f, 3.0f, 4.0f);
+
+    result = mat4_mul_vec4(matrix, input);
+
+    /*
+     * x = 1*1 + 2*2 + 3*3 + 4*4 = 30
+     * y = 5*1 + 6*2 + 7*3 + 8*4 = 70
+     * z = 9*1 + 10*2 + 11*3 + 12*4 = 110
+     * w = 13*1 + 14*2 + 15*3 + 16*4 = 150
+     */
+    ASSERT_NEAR(result.x, 30.0f);
+    ASSERT_NEAR(result.y, 70.0f);
+    ASSERT_NEAR(result.z, 110.0f);
+    ASSERT_NEAR(result.w, 150.0f);
+
+    TEST_PASS("mat4_mul_vec4");
+}
+
 int main(void)
 {
     mat4 identity = mat4_identity();
@@ -44,6 +83,8 @@ int main(void)
     }
 
     TEST_PASS("mat4");
+
+    test_mat4_mul_vec4();
 
     return 0;
 }
